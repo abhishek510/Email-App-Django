@@ -12,8 +12,9 @@ def home(request):
     return render(request, 'home.html')
 
 
-def remove_invalids(emailid_str):
-    emailid_list = emailid_str.split(',')
+def remove_invalids(emailid_str = None  ,emailid_list = None):
+    if emailid_list is None:
+        emailid_list = emailid_str.split(',')
     valid_email = []
     regex = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
     for emailid in emailid_list:
@@ -31,7 +32,7 @@ def parse_input(request):
         cc_str = (request.POST['cc'])
         bcc_str = (request.POST['bcc'])
 
-        recipients_list = remove_invalids(recipients_str)
+        recipients_list = remove_invalids(emailid_str=recipients_str)
         cc_list = remove_invalids(cc_str)
         bcc_list = remove_invalids(bcc_str)
         result = send_mail(recipients_list, cc_list, bcc_list, subject, body)
@@ -71,14 +72,15 @@ def upload_file(request):
         file = request.FILES['myfile']
         subject = request.POST['subject']
         body = request.POST['body']
-        df = pd.read_csv(file)
-        recipients_list = df.['to']
-        cc_list = df.['cc']
-        bcc_list = df.['bcc']
+        colnames = ['to', 'cc', 'bcc']
+        data = pd.read_csv(file, names = colnames)
+        recipients_list = data.to.tolist()
+        cc_list = data.cc.tolist()
+        bcc_list = data.bcc.tolist()
 
-        recipients_list = remove_invalids(recipients_str)
-        cc_list = remove_invalids(cc_str)
-        bcc_list = remove_invalids(bcc_str)
+        recipients_list = remove_invalids(emailid_list=recipients_list)
+        cc_list = remove_invalids(emailid_list=cc_list)
+        bcc_list = remove_invalids(emailid_list=bcc_list)
         result = send_mail(recipients_list, cc_list, bcc_list, subject, body)
         return HttpResponse(result)
         

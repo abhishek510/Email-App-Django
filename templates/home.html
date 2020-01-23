@@ -16,7 +16,7 @@
         <br>
         <hr>
         <div>
-            <form method="post" enctype="multipart/form-data">
+            <form action = "upload_file" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <input type="file" name="myfile" /><br>
                 Subject <input type="text" name="subject"><br>
