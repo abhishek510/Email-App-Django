@@ -1,0 +1,13 @@
+asgiref==3.2.3
+Django==3.0.2
+django-crontab==0.7.1
+numpy==1.18.1
+pandas==0.25.3
+pkg-resources==0.0.0
+python-dateutil==2.8.1
+python-http-client==3.2.1
+python-logstash==0.4.6
+pytz==2019.3
+sendgrid==6.1.0
+six==1.14.0
+sqlparse==0.3.0
