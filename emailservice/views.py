@@ -7,6 +7,9 @@ import pandas as pd
 import re
 import os
 import datetime
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 
@@ -37,6 +40,9 @@ def parse_input(request):
         recipients_list = remove_invalids(emailid_str=recipients_str)
         cc_list = remove_invalids(cc_str)
         bcc_list = remove_invalids(bcc_str)
+        logger.info("reciepients: "+recipients_str)
+        logger.info("cc: "+cc_str)
+        logger.info("bcc: "+bcc_str)
         result = send_mail(recipients_list, cc_list, bcc_list, subject, body)
         return HttpResponse(result)
 
