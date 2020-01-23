@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import *
+import pandas as pd
 import re
 import os
 
@@ -11,12 +12,8 @@ def home(request):
     return render(request, 'home.html')
 
 
-def convert_str_to_list(string1):
-    result_list = string1.split(',')
-    return result_list
-
-
-def remove_invalids(emailid_list):
+def remove_invalids(emailid_str):
+    emailid_list = emailid_str.split(',')
     valid_email = []
     regex = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
     for emailid in emailid_list:
@@ -34,13 +31,9 @@ def parse_input(request):
         cc_str = (request.POST['cc'])
         bcc_str = (request.POST['bcc'])
 
-        recipients_list = convert_str_to_list(recipients_str)
-        cc_list = convert_str_to_list(cc_str)
-        bcc_list = convert_str_to_list(bcc_str)
-
-        recipients_list = remove_invalids(recipients_list)
-        cc_list = remove_invalids(cc_list)
-        bcc_list = remove_invalids(bcc_list)
+        recipients_list = remove_invalids(recipients_str)
+        cc_list = remove_invalids(cc_str)
+        bcc_list = remove_invalids(bcc_str)
         result = send_mail(recipients_list, cc_list, bcc_list, subject, body)
         return HttpResponse(result)
 
@@ -72,3 +65,20 @@ def send_mail(recipients_list, cc_list, bcc_list, subject, body):
 
     return 'E-mails sent'
 
+
+def upload_file(request):
+    if request.method == 'POST':
+        file = request.FILES['myfile']
+        subject = request.POST['subject']
+        body = request.POST['body']
+        df = pd.read_csv(file)
+        recipients_list = df.['to']
+        cc_list = df.['cc']
+        bcc_list = df.['bcc']
+
+        recipients_list = remove_invalids(recipients_str)
+        cc_list = remove_invalids(cc_str)
+        bcc_list = remove_invalids(bcc_str)
+        result = send_mail(recipients_list, cc_list, bcc_list, subject, body)
+        return HttpResponse(result)
+        

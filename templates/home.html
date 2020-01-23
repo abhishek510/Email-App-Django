@@ -4,7 +4,7 @@
         <div>
         <form action="parse_input" method="POST">
             {% csrf_token %}
-            Recepient's ID <input type="text" name="r_ids"><br>
+            Recepient's ID(comma seperated) <input type="text" name="r_ids"><br>
             Subject <input type="text" name="subject"><br>
             Body <input type="text" name="body"><br>
             CC(comma seperated) <input type="text" name="cc"><br>
@@ -12,5 +12,17 @@
             <input type="submit">
         </form>
         </div>
+        <br>
+        <br>
+        <hr>
+        <div>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="file" name="myfile" /><br>
+                Subject <input type="text" name="subject"><br>
+                Body <input type="text" name="body"><br>
+                <input type="submit" name="submit" value="Upload" />
+            </form>
+            </div>
     </body>
 </html>
