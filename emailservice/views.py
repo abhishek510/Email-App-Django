@@ -2,9 +2,11 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import *
+from .models import MailList
 import pandas as pd
 import re
 import os
+import datetime
 
 # Create your views here.
 
@@ -63,6 +65,9 @@ def send_mail(recipients_list, cc_list, bcc_list, subject, body):
         response = sendgrid_client.client.mail.send.post(request_body=mail.get())
     except Exception as e:
         return 'Error. Please check your mailing list and try again'
+    
+    mail_stats = MailList.objects.Create(time = datetime.datetime.now(), email_subject=subject)
+    mail_stats.save()
 
     return 'E-mails sent'
 
