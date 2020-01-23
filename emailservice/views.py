@@ -1,7 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import *
 import re
-
+import os
 
 # Create your views here.
 
@@ -39,7 +41,34 @@ def parse_input(request):
         recipients_list = remove_invalids(recipients_list)
         cc_list = remove_invalids(cc_list)
         bcc_list = remove_invalids(bcc_list)
+        result = send_mail(recipients_list, cc_list, bcc_list, subject, body)
+        return HttpResponse(result)
 
-        if len(recipients_list) == 0:
-            return HttpResponse('<h1>All recipients were invalid</h1>')
-        
+
+
+def send_mail(recipients_list, cc_list, bcc_list, subject, body):
+    if len(recipients_list) == 0:
+        return 'All recipients were invalid'
+    
+    mail = Mail()
+    mail.from_email = Email("test@domain.com", "Abhishek")
+    mail.subject = subject
+
+    personalization = Personalization()
+    for recipient in recipients_list:
+        personalization.add_to(Email(recipient))
+    for recipient in cc_list:
+        personalization.add_cc(Email(recipient))
+    for recipient in bcc_list:
+        personalization.add_bcc(Email(recipient))
+    mail.add_personalization(personalization)
+    mail.add_content(Content("text/plain", body))
+
+    try:
+        sendgrid_client = SendGridAPIClient(os.environ['SENDGRID_API_KEY'])
+        response = sendgrid_client.client.mail.send.post(request_body=mail.get())
+    except Exception as e:
+        return 'Error. Please check your mailing list and try again'
+
+    return 'E-mails sent'
+
